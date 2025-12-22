@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tycoon Airline Status</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+            padding: 20px;
+            margin: 0;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .input-area {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        input[type="password"] {
+            padding: 10px;
+            width: 300px;
+            font-size: 16px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background: #333;
+            color: #fff;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-left: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        pre {
+            background-color: #222;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .status {
+            text-align: center;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tycoon Airline Status</h1>
+        
+        <div class="input-area">
+            <input type="password" id="apiKey" placeholder="Enter your private API key here" />
+            <button onclick="saveKeyAndFetch()">Load Data</button>
+        </div>
+        
+        <div class="status" id="status">Enter your key and click Load Data</div>
+        
+        <pre id="output">Data will appear here once loaded...</pre>
+    </div>
+
+    <script>
+        const API_URL = 'https://tycoon-2epova.users.cfx.re/status/airline.json';
+        const output = document.getElementById('output');
+        const status = document.getElementById('status');
+        const keyInput = document.getElementById('apiKey');
+
+        // Try to load saved key from localStorage (persists between sessions in the same browser/app instance)
+        const savedKey = localStorage.getItem('tycoonApiKey');
+        if (savedKey) {
+            keyInput.value = savedKey;
+            status.textContent = 'Key loaded from memory. Click Load Data to refresh.';
+        }
+
+        async function fetchAirlineData(apiKey) {
+            if (!apiKey) {
+                status.textContent = 'Error: Please enter your API key.';
+                output.textContent = '';
+                return;
+            }
+
+            status.textContent = 'Fetching data...';
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'GET',
+                    headers: {
+                        'X-Tycoon-Key': apiKey
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error('Unauthorized - Check your API key');
+                    } else if (response.status === 402) {
+                        throw new Error('No API charges remaining');
+                    } else {
+                        throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+                    }
+                }
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 2);
+                status.textContent = `Success! Loaded at ${new Date().toLocaleTimeString()}`;
+            } catch (error) {
+                output.textContent = '';
+                status.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        function saveKeyAndFetch() {
+            const key = keyInput.value.trim();
+            if (key) {
+                localStorage.setItem('tycoonApiKey', key);  // Save for next time
+            }
+            fetchAirlineData(key);
+        }
+
+        // Optional: Press Enter in the input box to load
+        keyInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                saveKeyAndFetch();
+            }
+        });
+    </script>
+</body>
+</html>
