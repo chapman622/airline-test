@@ -20,7 +20,7 @@
             width: 450px;
             max-height: 80vh;
             overflow-y: auto;
-            background: rgba(0, 0, 0, 0.65); /* Semi-transparent for readability */
+            background: rgba(0, 0, 0, 0.65); /* Semi-transparent dark for readability */
             padding: 15px;
             border-radius: 10px;
             border: 1px solid lime;
@@ -50,11 +50,11 @@
 <body>
     <div id="container">
         <h1>Transport Tycoon Globals Live Debug</h1>
-        <p>Updates every 2s + initial cache request. Watch notification during airline jobs.</p>
+        <p>Updates every 2 seconds + initial cache request. Watch notification during airline jobs.</p>
         <pre id="output">Loading globals...</pre>
     </div>
 
-    <!-- CACHE-BUST -->
+    <!-- CACHE-BUST: Auto-add timestamp if missing -->
     <script>
         (function() {
             const url = new URL(window.location.href);
@@ -94,7 +94,16 @@
         // Force refresh of cached data on load
         window.parent.postMessage({ 
             type: "getNamedData", 
-            keys: ["notification", "job_name", "subjob_name", "street", "zoneName", "waypoint", "waypoint_x", "waypoint_y"] 
+            keys: [
+                "notification", 
+                "job_name", 
+                "subjob_name", 
+                "street", 
+                "zoneName", 
+                "waypoint", 
+                "waypoint_x", 
+                "waypoint_y"
+            ] 
         }, "*");
         console.log('Requested fresh cached data via getNamedData');
 
