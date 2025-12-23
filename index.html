@@ -11,20 +11,20 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-            pointer-events: none; /* Lets you click through to game */
+            pointer-events: none; /* Click through to game */
         }
         #container {
             position: fixed;
             top: 10px;
             right: 10px;
-            width: 400px;
+            width: 450px;
             max-height: 80vh;
             overflow-y: auto;
-            background: rgba(0, 0, 0, 0.65); /* Semi-transparent dark box */
+            background: rgba(0, 0, 0, 0.65); /* Semi-transparent for readability */
             padding: 15px;
             border-radius: 10px;
             border: 1px solid lime;
-            pointer-events: auto; /* Only this box is clickable */
+            pointer-events: auto; /* Box is interactive */
             font-size: 14px;
             z-index: 9999;
         }
@@ -41,12 +41,16 @@
             white-space: pre-wrap;
             font-family: monospace;
         }
+        p {
+            margin: 0 0 10px;
+            font-size: 13px;
+        }
     </style>
 </head>
 <body>
     <div id="container">
-        <h1>TT Globals Debug</h1>
-        <p style="margin: 0 0 10px; font-size: 13px;">Live updates every 2s. Watch notification during airline jobs.</p>
+        <h1>Transport Tycoon Globals Live Debug</h1>
+        <p>Updates every 2s + initial cache request. Watch notification during airline jobs.</p>
         <pre id="output">Loading globals...</pre>
     </div>
 
@@ -83,8 +87,16 @@
             console.log('Globals update:', globals);
         }
 
+        // Update every 2 seconds
         setInterval(updateDisplay, 2000);
         updateDisplay(); // initial
+
+        // Force refresh of cached data on load
+        window.parent.postMessage({ 
+            type: "getNamedData", 
+            keys: ["notification", "job_name", "subjob_name", "street", "zoneName", "waypoint", "waypoint_x", "waypoint_y"] 
+        }, "*");
+        console.log('Requested fresh cached data via getNamedData');
 
         console.log('Debug monitor started - ' + new Date().toISOString());
     </script>
