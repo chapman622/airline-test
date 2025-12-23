@@ -4,17 +4,53 @@
     <meta charset="UTF-8">
     <title>TT Globals Debug</title>
     <style>
-        body { background: black; color: lime; font-family: Arial; padding: 20px; font-size: 16px; }
-        h1 { color: cyan; }
-        pre { background: #000; padding: 15px; border-radius: 8px; white-space: pre-wrap; font-size: 14px; }
+        body {
+            background: transparent;
+            color: lime;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            pointer-events: none; /* Lets you click through to game */
+        }
+        #container {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.65); /* Semi-transparent dark box */
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid lime;
+            pointer-events: auto; /* Only this box is clickable */
+            font-size: 14px;
+            z-index: 9999;
+        }
+        h1 {
+            color: cyan;
+            margin: 0 0 10px;
+            font-size: 18px;
+        }
+        pre {
+            background: transparent;
+            color: lime;
+            margin: 0;
+            padding: 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
     </style>
 </head>
 <body>
-    <h1>Transport Tycoon Globals Live Debug</h1>
-    <p>Updates every 2 seconds. Watch for changes during airline job (boarding, pushback, etc.).</p>
-    <pre id="output">Loading globals...</pre>
+    <div id="container">
+        <h1>TT Globals Debug</h1>
+        <p style="margin: 0 0 10px; font-size: 13px;">Live updates every 2s. Watch notification during airline jobs.</p>
+        <pre id="output">Loading globals...</pre>
+    </div>
 
-    <!-- CACHE-BUST: Force fresh load with timestamp if missing -->
+    <!-- CACHE-BUST -->
     <script>
         (function() {
             const url = new URL(window.location.href);
@@ -36,19 +72,17 @@
                 waypoint: window.waypoint || 'undefined',
                 waypoint_x: window.waypoint_x || 'undefined',
                 waypoint_y: window.waypoint_y || 'undefined',
-                // Add more if you suspect other keys
             };
 
             let text = 'Current globals:\n\n';
             for (const [key, value] of Object.entries(globals)) {
-                text += `${key}: ${value}\n`;
+                text += `${key.padEnd(15)}: ${value}\n`;
             }
 
             document.getElementById('output').textContent = text;
             console.log('Globals update:', globals);
         }
 
-        // Update every 2 seconds
         setInterval(updateDisplay, 2000);
         updateDisplay(); // initial
 
