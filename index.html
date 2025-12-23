@@ -2,20 +2,57 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Test Load</title>
+    <title>TT Globals Debug</title>
+    <style>
+        body { background: black; color: lime; font-family: Arial; padding: 20px; font-size: 16px; }
+        h1 { color: cyan; }
+        pre { background: #000; padding: 15px; border-radius: 8px; white-space: pre-wrap; font-size: 14px; }
+    </style>
 </head>
-<body style="background:black;color:lime;font-family:Arial;">
-    <h1>SCRIPT LOADED SUCCESSFULLY</h1>
-    <p>If you see this, the app loaded.</p>
-    <p>Open F8 console now — you should see logs below.</p>
+<body>
+    <h1>Transport Tycoon Globals Live Debug</h1>
+    <p>Updates every 2 seconds. Watch for changes during airline job (boarding, pushback, etc.).</p>
+    <pre id="output">Loading globals...</pre>
+
+    <!-- CACHE-BUST: Force fresh load with timestamp if missing -->
     <script>
-        console.log('TEST SCRIPT LOADED - ' + new Date().toISOString());
-        console.log('window.notification:', window.notification || 'undefined');
-        console.log('Sending test message to parent...');
-        window.parent.postMessage({ type: "test", message: "Hello from user app" }, "*");
-        setInterval(() => {
-            console.log('Still alive - ' + new Date().toISOString());
-        }, 5000);
+        (function() {
+            const url = new URL(window.location.href);
+            if (!url.searchParams.has('v')) {
+                url.searchParams.set('v', Date.now());
+                window.location.replace(url.toString());
+            }
+        })();
+    </script>
+
+    <script>
+        function updateDisplay() {
+            const globals = {
+                notification: window.notification || 'undefined',
+                job_name: window.job_name || 'undefined',
+                subjob_name: window.subjob_name || 'undefined',
+                street: window.street || 'undefined',
+                zoneName: window.zoneName || 'undefined',
+                waypoint: window.waypoint || 'undefined',
+                waypoint_x: window.waypoint_x || 'undefined',
+                waypoint_y: window.waypoint_y || 'undefined',
+                // Add more if you suspect other keys
+            };
+
+            let text = 'Current globals:\n\n';
+            for (const [key, value] of Object.entries(globals)) {
+                text += `${key}: ${value}\n`;
+            }
+
+            document.getElementById('output').textContent = text;
+            console.log('Globals update:', globals);
+        }
+
+        // Update every 2 seconds
+        setInterval(updateDisplay, 2000);
+        updateDisplay(); // initial
+
+        console.log('Debug monitor started - ' + new Date().toISOString());
     </script>
 </body>
 </html>
