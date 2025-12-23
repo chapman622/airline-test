@@ -105,6 +105,13 @@
                 "waypoint_y"
             ] 
         }, "*");
+
+        // Request initial cached data
+
+        window.parent.postMessage({ type: "getData" }, "*");
+
+        console.log('Requested full cached data on load');
+
         console.log('Requested fresh cached data via getNamedData');
 
         console.log('Debug monitor started - ' + new Date().toISOString());
